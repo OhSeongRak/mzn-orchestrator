@@ -17,10 +17,6 @@ class DatabaseConfig:
 @dataclass
 class ABCLabConfig:
     """ABC Lab API 설정"""
-    # api_url: str = "https://api.abclab.ktds.com/v1/chat-messages"
-    # api_key: str = "app-ok1DMMGxuFnlgsuBcdQ0pWHu"
-    # timeout: int = 180
-    # user: str = "osr0907"
     api_url: str = os.getenv('ABC_LAB_API_URL')
     api_key: str = os.getenv('ABC_LAB_API_KEY')
     timeout: int = int(os.getenv('ABC_LAB_TIMEOUT'))
