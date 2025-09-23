@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  # Backend API Server
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: mzn-orchestrator-backend
+    ports:
+      - "15000:15000"
+    environment:
+      - FLASK_HOST=0.0.0.0
+      - FLASK_PORT=15000
+      - FLASK_DEBUG=false
+      - DB_HOST=${DB_HOST:-10.217.59.149}
+      - DB_PORT=${DB_PORT:-5444}
+      - DB_NAME=${DB_NAME:-devkmzn}
+      - DB_USER=${DB_USER:-kmznmst}
+      - DB_PASS=${DB_PASS:-new1234!}
+    volumes:
+      - ./backend:/app
+      - backend_logs:/app/logs
+    networks:
+      - mzn-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:15000/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend Web Application  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: mzn-orchestrator-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:15000
+      - NODE_ENV=production
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    networks:
+      - mzn-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy (선택사항)
+  nginx:
+    image: nginx:alpine
+    container_name: mzn-orchestrator-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      - mzn-network
+    depends_on:
+      - backend
+      - frontend
+    restart: unless-stopped
+    profiles:
+      - production
+
+# Networks
+networks:
+  mzn-network:
+    driver: bridge
+    name: mzn-orchestrator-network
+
+# Volumes
+volumes:
+  backend_logs:
+    driver: local
+    name: mzn-orchestrator-backend-logs
+
+# Development override 파일 예시
+# docker-compose.override.yml 파일 생성 시 개발 환경 설정 가능
