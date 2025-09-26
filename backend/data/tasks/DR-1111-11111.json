@@ -1,0 +1,9 @@
+{
+  "task_id": "DR-1111-11111",
+  "title": "DR-1111-11111",
+  "content": "DR-1111-11111",
+  "sql": "INSERT INTO kmznmst.tb_cdrcoll_base_info VALUES ('F1_RWLNSM_D', '/WRK/SND/NRAT/VOICLS/LTHEHA10', 'NOCHG', DATE('9999-12-31 23:59:59'), NOW(), 'WLNE', NOW(), 'WLNE', 'WLNE', 'WLNE', DATE('2017-01-28 00:00:00'), 'LTHEHA10', 'LTHEHA10', 'VOICLS', 'N', NULL, 'N', 'N', NULL, 'N', 'Y', 'Y', 'N', NULL, 'N', 0, 0, 0, 'Y', NULL, 'N', 'N', NULL, NULL, NULL, NULL, 'N');\nINSERT INTO kmznmst.tb_cdrcoll_base_info VALUES ('C2_LTHEHA10', '/WRK/RCV/WLN/VOICLS/LTHEHA10', 'O_VOICLS', DATE('9999-12-31 23:59:59'), NOW(), 'WLNE', NOW(), 'WLNE', 'WLNE', 'WLNE', DATE('2015-01-01 00:00:00'), 'LTHEHA10', 'LTHEHA10', 'VOICLS', 'N', NULL, 'N', 'N', NULL, 'N', 'Y', 'Y', 'N', NULL, 'N', 0, 0, 0, 'Y', NULL, 'N', 'N', NULL, NULL, NULL, NULL, 'N');",
+  "author": "",
+  "created_at": "2025-09-26T14:06:49.384813",
+  "updated_at": "2025-09-26T14:06:49.384813"
+}

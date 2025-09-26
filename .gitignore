@@ -46,6 +46,8 @@ venv/
 ENV/
 env/
 .venv/
+mzn-venv/
+.mzn-venv/
 
 # ===================================
 # Node.js (Frontend)

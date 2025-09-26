@@ -1,0 +1,7 @@
+Flask==2.3.3
+Flask-CORS==4.0.0
+# psycopg2-binary==2.9.10 개별로 설치 : pip install D:\pythonLib\psycopg2_binary-2.9.10-cp312-cp312-win_amd64.whl
+requests==2.31.0
+python-dotenv==1.0.0
+openai==1.12.0
+numpy==2.3.3

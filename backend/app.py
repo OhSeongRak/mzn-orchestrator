@@ -12,6 +12,7 @@ from config import app_config
 from routes.database import database_bp
 from routes.custom_sql import custom_sql_bp
 from routes.ai_sql import ai_sql_bp
+from routes.task import task_bp  
 
 # 로깅 설정
 logging.basicConfig(
@@ -20,21 +21,23 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+
 def create_app():
     """Flask 앱 팩토리"""
     app = Flask(__name__)
-    
+
     # 설정
     app.secret_key = app_config.secret_key
-    
+
     # CORS 설정
     CORS(app)
-    
+
     # Blueprint 등록
     app.register_blueprint(database_bp)
     app.register_blueprint(custom_sql_bp)
     app.register_blueprint(ai_sql_bp)
-    
+    app.register_blueprint(task_bp)  
+
     # 글로벌 에러 핸들러
     @app.errorhandler(404)
     def not_found(error):
@@ -75,7 +78,8 @@ def create_app():
                 "endpoints": {
                     "database": "/api/v1/database/*",
                     "custom_sql": "/api/v1/sql/custom/*",
-                    "ai_sql": "/api/v1/sql/ai/*"
+                    "ai_sql": "/api/v1/sql/ai/*",
+                    "tasks": "/api/v1/tasks/*"  
                 }
             },
             "message": "MZN Orchestrator API 서버가 정상적으로 실행 중입니다.",
@@ -99,16 +103,17 @@ def create_app():
 
     return app
 
+
 def main():
     """메인 실행 함수"""
     app = create_app()
-    
+
     # 개발 환경 체크
     if os.environ.get('WERKZEUG_RUN_MAIN') != 'true':
         print("=" * 70)
         print("🚀 MZN Orchestrator v2.0 Backend 서버 시작!")
         print(f"📍 URL: http://{app_config.host}:{app_config.port}")
-        print("📝 새로운 기능: AI SQL 생성 (기존 NE Migration)")
+        print("📝 새로운 기능: AI SQL 생성 + 과제 관리")
         print("🔧 RESTful API 구조로 개선")
         print("⏹️  중지하려면 Ctrl+C를 누르세요")
         print("=" * 70)
@@ -116,11 +121,11 @@ def main():
         print(f"  • GET    / - 서비스 정보")
         print(f"  • GET    /api/v1/health - 헬스체크")
         print(f"  • POST   /api/v1/database/connect - DB 연결")
-        print(f"  • GET    /api/v1/database/tables/<schema>/<table>/columns - 테이블 컬럼 조회")
         print(f"  • POST   /api/v1/sql/custom/generate - 커스텀 SQL 생성")
-        print(f"  • POST   /api/v1/sql/custom/validate - SQL 검증")
         print(f"  • POST   /api/v1/sql/ai/generate - AI SQL 생성")
-        print(f"  • GET    /api/v1/sql/ai/tables/<ne_id> - AI SQL 데이터 미리보기")
+        print(f"  • POST   /api/v1/tasks - 과제 등록 ⭐NEW")
+        print(f"  • GET    /api/v1/tasks - 과제 목록 ⭐NEW")
+        print(f"  • DELETE /api/v1/tasks/<task_id> - 과제 삭제 ⭐NEW")
         print("=" * 70)
 
     try:
@@ -133,6 +138,7 @@ def main():
         print("\n⏹️ 서버가 종료되었습니다.")
     except Exception as e:
         print(f"❌ 서버 시작 오류: {e}")
+
 
 if __name__ == "__main__":
     main()
