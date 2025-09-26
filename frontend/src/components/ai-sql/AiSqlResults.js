@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import toast from 'react-hot-toast';
+import RecommendationTab from './RecommendationTab';
 
 const AiSqlResults = ({ results, sourceNeId, targetNeId, onBackToForm }) => {
   const [selectedTab, setSelectedTab] = useState('overview');
+  const [recommendations, setRecommendations] = useState([]);
+  const [isLoadingRecommend, setIsLoadingRecommend] = useState(false);
 
   const handleCopyToClipboard = async (content, itemName) => {
     try {
@@ -18,7 +22,6 @@ const AiSqlResults = ({ results, sourceNeId, targetNeId, onBackToForm }) => {
       await navigator.clipboard.writeText(content);
       toast.success(`${itemName}이 클립보드에 복사되었습니다!`);
     } catch (error) {
-      // Fallback for older browsers
       const textArea = document.createElement('textarea');
       textArea.value = content;
       document.body.appendChild(textArea);
@@ -60,7 +63,6 @@ const AiSqlResults = ({ results, sourceNeId, targetNeId, onBackToForm }) => {
     fullSQL += `-- 총 INSERT문: ${results.final_insert_count}개\n`;
     fullSQL += `-- ===============================================\n\n`;
 
-    // AI 생성 결과가 있으면 사용, 없으면 원본 사용
     if (results.final_results?.ai_generated_sql) {
       fullSQL += results.final_results.ai_generated_sql.statements.join('\n');
     } else if (results.final_results?.original_sql) {
@@ -78,10 +80,32 @@ const AiSqlResults = ({ results, sourceNeId, targetNeId, onBackToForm }) => {
     return `ai_sql_${sourceId}_to_${targetId}_${timestamp}.sql`;
   };
 
+  const fetchRecommendations = async () => {
+    setIsLoadingRecommend(true);
+    try {
+      const response = await axios.post('/api/v1/tasks/recommend', {
+        sql: getFullSql()
+      });
+      
+      if (response.data.success) {
+        setRecommendations(response.data.data.recommendations);
+        if (response.data.data.recommendations.length === 0) {
+          toast.info('유사한 과제를 찾지 못했습니다.');
+        }
+      }
+    } catch (error) {
+      console.error('추천 조회 오류:', error);
+      toast.error('추천 조회 중 오류가 발생했습니다.');
+    } finally {
+      setIsLoadingRecommend(false);
+    }
+  };
+
   const tabs = [
     { id: 'overview', label: '생성 결과', icon: '📊' },
     { id: 'original', label: '원본 데이터', icon: '📋' },
-    { id: 'final', label: '최종 SQL', icon: '🎯' }
+    { id: 'final', label: '최종 SQL', icon: '🎯' },
+    { id: 'recommend', label: '유사 과제 추천', icon: '🤖' }
   ];
 
   return (
@@ -136,7 +160,12 @@ const AiSqlResults = ({ results, sourceNeId, targetNeId, onBackToForm }) => {
               <button
                 key={tab.id}
                 className={`tab-btn ${selectedTab === tab.id ? 'active' : ''}`}
-                onClick={() => setSelectedTab(tab.id)}
+                onClick={() => {
+                  setSelectedTab(tab.id);
+                  if (tab.id === 'recommend' && recommendations.length === 0) {
+                    fetchRecommendations();
+                  }
+                }}
               >
                 <span className="tab-icon">{tab.icon}</span>
                 <span className="tab-label">{tab.label}</span>
@@ -312,11 +341,19 @@ const AiSqlResults = ({ results, sourceNeId, targetNeId, onBackToForm }) => {
                 </div>
               </div>
             )}
+
+            {selectedTab === 'recommend' && (
+              <RecommendationTab 
+                recommendations={recommendations}
+                isLoading={isLoadingRecommend}
+              />
+            )}
           </div>
         </div>
       </div>
 
       <style jsx>{`
+        /* 기존 스타일 유지... */
         .ai-sql-results-section {
           animation: fadeInUp 0.6s ease-out;
           padding: 40px 0;

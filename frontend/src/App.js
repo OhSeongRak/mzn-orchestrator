@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast';
 
 // Components
 import Header from './components/common/Header';
@@ -9,6 +8,7 @@ import DatabaseConnection from './components/database/DatabaseConnection';
 import ServiceSelection from './components/common/ServiceSelection';
 import CustomSqlGenerator from './components/custom-sql/CustomSqlGenerator';
 import AiSqlGenerator from './components/ai-sql/AiSqlGenerator';
+import TaskManagement from './components/task/TaskManagement';  // ← NEW!
 
 // Services
 import apiService from './services/api';
@@ -19,7 +19,6 @@ function App() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 앱 시작 시 서버 연결 확인
   useEffect(() => {
     checkServerConnection();
   }, []);
@@ -29,7 +28,7 @@ function App() {
       await apiService.healthCheck();
       console.log('서버 연결 확인됨');
     } catch (error) {
-      toast.error('서버에 연결할 수 없습니다. 백엔드 서버를 확인해주세요.');
+      console.error('서버 연결 실패:', error);
     }
   };
 
@@ -41,11 +40,10 @@ function App() {
       if (result.success) {
         setIsDbConnected(true);
         setConnectionInfo(result.data.connection_info);
-        toast.success('데이터베이스 연결이 성공했습니다!');
         navigate('/services');
       }
     } catch (error) {
-      toast.error(error.message || '데이터베이스 연결에 실패했습니다.');
+      console.error('DB 연결 실패:', error);
     } finally {
       setIsLoading(false);
     }
@@ -71,7 +69,7 @@ function App() {
       
       <main className="container">
         <Routes>
-          {/* 데이터베이스 연결 페이지 */}
+          {/* 데이터베이스 연결 */}
           <Route 
             path="/" 
             element={
@@ -82,7 +80,7 @@ function App() {
             } 
           />
           
-          {/* 서비스 선택 페이지 */}
+          {/* 서비스 선택 */}
           <Route 
             path="/services" 
             element={
@@ -100,7 +98,7 @@ function App() {
             } 
           />
           
-          {/* 커스텀 SQL 생성 페이지 */}
+          {/* 커스텀 SQL */}
           <Route 
             path="/custom-sql" 
             element={
@@ -115,7 +113,7 @@ function App() {
             } 
           />
           
-          {/* AI SQL 생성 페이지 */}
+          {/* AI SQL */}
           <Route 
             path="/ai-sql" 
             element={
@@ -128,6 +126,12 @@ function App() {
                 />
               )
             } 
+          />
+
+          {/* 과제 관리 ⭐NEW */}
+          <Route 
+            path="/tasks" 
+            element={<TaskManagement />} 
           />
         </Routes>
       </main>

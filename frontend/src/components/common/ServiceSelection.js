@@ -4,31 +4,45 @@ const ServiceSelection = ({ onServiceSelect, connectionInfo }) => {
   const services = [
     {
       id: 'custom-sql',
-      title: '커스텀 SQL 생성기',
       icon: '⚙️',
-      description: '테이블 컬럼별 옵션 설정을 통한 커스텀 INSERT문 생성',
+      title: '커스텀 SQL 생성기',
+      description: '테이블 컬럼 정보를 활용한 맞춤 SQL 생성',
       features: [
         '테이블 컬럼별 세부 옵션 설정',
         'WHERE 조건 커스터마이징',
-        'AI SQL 정합성 검증'
+        'AI SQL 형변환 검증'
       ],
-      buttonText: '커스텀 생성기 사용',
+      buttonText: '커스텀 생성기 시작',
       buttonClass: 'btn-primary',
       accentColor: 'var(--accent-blue)'
     },
     {
       id: 'ai-sql',
-      title: 'AI SQL 생성 도구',
       icon: '🤖',
+      title: 'AI SQL 생성 도구',
       description: 'NE ID 기반 자동 SQL 생성 도구',
       features: [
         '5개 테이블 자동 연계 처리',
         'NE ID 기반 관련 데이터 추출',
         'ABC Lab API 자동 변환'
       ],
-      buttonText: 'AI SQL 도구 사용',
+      buttonText: 'AI SQL 도구 시작',
       buttonClass: 'btn-success',
-      accentColor: 'var(--accent-green)'
+      accentColor: 'var(--accent-green)',
+    },
+    {
+      id: 'tasks',
+      icon: '📝',
+      title: '과제 관리',
+      description: 'AI 추천을 위한 과제 등록 및 관리',
+      features: [
+        '과제 등록 및 저장',
+        'SQL 임베딩 자동 생성',
+        '과제 목록 조회 및 삭제'
+      ],
+      buttonText: '과제 관리 시작',
+      buttonClass: 'btn-purple',
+      accentColor: 'var(--accent-purple)',
     }
   ];
 
@@ -129,9 +143,34 @@ const ServiceSelection = ({ onServiceSelect, connectionInfo }) => {
 
         .services-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          // grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+          grid-template-columns: repeat(3, 1fr);
           gap: 32px;
           margin-bottom: 40px;
+        }
+
+        /* 반응형 추가 */
+        @media (max-width: 1200px) {
+          .services-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+
+        @media (max-width: 768px) {
+          .services-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        .btn-purple {
+          background: linear-gradient(135deg, var(--accent-purple), #9b59b6);
+          color: var(--text-white);
+        }
+
+        .btn-purple:hover {
+          background: linear-gradient(135deg, #9b59b6, var(--accent-purple));
+          transform: translateY(-2px);
+          box-shadow: 0 8px 16px rgba(198, 120, 221, 0.3);
         }
 
         .service-card {
